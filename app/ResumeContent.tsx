@@ -1,9 +1,23 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { ChevronDown, Instagram, Facebook, Linkedin, Twitter, Download, Check, Guitar, Piano, Pencil, Activity, Globe, ExternalLink, X, Mail } from 'lucide-react'
+import { ChevronDown, Instagram, Facebook, Linkedin, Twitter, Download, Check, Guitar, Piano, Pencil, Activity, Globe, ExternalLink, X, Mail, Music, Waves, Code, Dumbbell } from 'lucide-react'
 import { css, Global } from '@emotion/react'
 import Link from 'next/link'
+
+const globalStyles = css`
+  @keyframes neon-glow {
+    0% {
+      box-shadow: 0 0 5px #4ade80, 0 0 10px #4ade80, 0 0 15px #4ade80, 0 0 20px #4ade80;
+    }
+    100% {
+      box-shadow: 0 0 10px #4ade80, 0 0 20px #4ade80, 0 0 30px #4ade80, 0 0 40px #4ade80;
+    }
+  }
+  .glow {
+    animation: neon-glow 1.5s ease-in-out infinite alternate;
+  }
+`
 
 const Section = ({ children, className = "", id = "" }: { children: React.ReactNode, className?: string, id?: string }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -56,6 +70,7 @@ export default function ResumeContent() {
   const introRef = useRef<HTMLDivElement>(null)
   const mainVideoRef = useRef<HTMLVideoElement>(null)
   const introVideoRef = useRef<HTMLVideoElement>(null)
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -128,13 +143,13 @@ export default function ResumeContent() {
       link: 'https://yourportfolio.com',
     },
     {
-      title: 'E-commerce Platform',
-      description: 'A full-stack e-commerce solution with user authentication and payment integration.',
-      technologies: ['Node.js', 'Express', 'MongoDB', 'React'],
+      title: 'Online legal consulting firm',
+      description: 'legal guidance with an interactive website featuring service overviews, expert profiles, case studies, and a secure client portal for seamless consultation and document management.',
+      technologies: ['Node.js', 'MongoDB', 'React', 'Tailwind CSS'],
       link: 'https://yourecommerce.com',
     },
     {
-      title: 'Weather App',
+      title: 'Notes Management Desktop/Web application',
       description: 'A real-time weather application using geolocation and weather APIs.',
       technologies: ['JavaScript', 'HTML5', 'CSS3', 'OpenWeatherMap API'],
       link: 'https://yourweatherapp.com',
@@ -162,8 +177,17 @@ export default function ResumeContent() {
     setKey(prevKey => prevKey + 1);
   }, []);
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div key={key} className="min-h-screen bg-black text-white">
+      <Global styles={globalStyles} />
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-black' : 'bg-transparent'}`}>
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/" className="text-3xl font-bold hover:text-green-400 transition-colors duration-300">YG</Link>
@@ -267,14 +291,17 @@ export default function ResumeContent() {
             </div>
             <div ref={introRef}   className="bg-black bg-opacity-50 backdrop-blur-md rounded-lg p-8 max-w-4xl w-full relative z-10">
               <div className="flex flex-col lg:flex-row items-center lg:items-start">
-                <img src="/placeholder.svg?height=300&width=300" alt="Profile" className="w-64 h-64 object-cover mb-4 lg:mr-8 rounded-full" />
+                <img src="https://content.api.news/v3/images/bin/9761432adcbb7644f1ab75b67cc0f152" alt="Profile" className="w-64 h-64 object-cover mb-4 lg:mr-8 rounded-full" />
                 <div className="text-center lg:text-left">
-                  <h2 className="text-4xl font-bold mb-4">Hello, I'm <span className="text-green-400">Yassine Ghanmouni</span></h2>
-                  <p className="text-xl mb-4">UX/UI Designer and Front-end Developer</p>
-                  <p className="mb-4">Brief description about yourself and your experience.</p>
-                  <button className="bg-green-400 text-black px-4 py-2 rounded flex items-center hover:bg-green-300 transition-colors duration-300 mx-auto lg:mx-0">
-                    <Download className="mr-2" /> Download CV
-                  </button>
+                <h2 className="text-4xl font-bold mb-4">Hello, I'm <span className="text-green-400">Yassine Ghanmouni</span></h2>
+                  <p className="text-xl mb-4" style={{ fontSize: '24px' }}>Computer Science Student</p>
+                  <p className="mb-4"> With a passion for coding and a strong desire to tackle new challenges, I am eager to explore innovative solutions and continuously develop my expertise in the field.</p>
+                  <button 
+                        className="bg-green-400 text-black px-4 py-2 rounded flex items-center hover:bg-green-300 transition-colors duration-300 mx-auto lg:mx-0" 
+                         style={{ marginTop: '50px', marginLeft: '160px' }}>
+                        <Download className="mr-2" /> Download CV
+                              </button>
+
                 </div>
               </div>
             </div>
@@ -391,10 +418,10 @@ export default function ResumeContent() {
             <h3 className="text-2xl font-bold mb-6">Interests</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
-                { icon: Guitar, title: 'Guitar', description: 'A big fan and player of classical guitar.' },
-                { icon: Piano, title: 'Piano', description: 'Piano Player and fan of blues music.' },
-                { icon: Pencil, title: 'Drawing', description:  'I draw and paint portrait in grey shades.' },
-                { icon: Activity, title: 'Basketball', description: 'Basketball is my game.' },
+                { icon: Music, title: 'Music', description: 'Passionate about various genres and playing instruments.' },
+                { icon: Waves, title: 'Swimming', description: 'Enjoy swimming for fitness and relaxation.' },
+                { icon: Code, title: 'Coding', description: 'Love creating and problem-solving through programming.' },
+                { icon: Dumbbell, title: 'Gym', description: 'Committed to maintaining physical fitness and strength training.' },
               ].map((interest, index) => (
                 <div key={index} className="flex flex-col items-center text-center">
                   <interest.icon className="text-green-400 mb-2" size={48} />
@@ -453,8 +480,9 @@ export default function ResumeContent() {
         </div>
       )}
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4">
+      <footer className="bg-black text-white py-8 relative">
+        <div className="absolute inset-0 border-4 border-neon-green glow"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <h3 className="text-2xl font-bold mb-2">Yassine Ghanmouni</h3>
