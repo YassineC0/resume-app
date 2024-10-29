@@ -36,17 +36,16 @@ const Section = ({ children, className = "", id = "" }: { children: React.ReactN
       { threshold: 0.1 }
     );
 
-    const currentRef = sectionRef.current;
-    if (currentRef) {
-      observer.observe(currentRef);
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
     }
 
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
       }
     };
-  }, [sectionRef.current]);
+  }, []);
 
   return (
     <div
