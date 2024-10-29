@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { ChevronDown, Instagram, Facebook, Linkedin, Twitter, Download, Check, Guitar, Piano, Pencil, Activity, Globe, ExternalLink, X, Mail, Music, Waves, Code, Dumbbell } from 'lucide-react'
+import { ChevronDown, Instagram, Facebook, Linkedin, Twitter, Download, Check, Globe, ExternalLink, X, Mail, Music, Waves, Code, Dumbbell } from 'lucide-react'
 import { css, Global } from '@emotion/react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const globalStyles = css`
   @keyframes neon-glow {
@@ -35,16 +36,17 @@ const Section = ({ children, className = "", id = "" }: { children: React.ReactN
       { threshold: 0.1 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    const currentRef = sectionRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, []);
+  }, [sectionRef.current]);
 
   return (
     <div
@@ -70,7 +72,6 @@ export default function ResumeContent() {
   const introRef = useRef<HTMLDivElement>(null)
   const mainVideoRef = useRef<HTMLVideoElement>(null)
   const introVideoRef = useRef<HTMLVideoElement>(null)
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -177,14 +178,6 @@ export default function ResumeContent() {
     setKey(prevKey => prevKey + 1);
   }, []);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-
   return (
     <div key={key} className="min-h-screen bg-black text-white">
       <Global styles={globalStyles} />
@@ -213,10 +206,11 @@ export default function ResumeContent() {
       <main className="relative">
         <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden">
           <div className="absolute inset-0 bg-black">
-            <img 
+            <Image 
               src="https://i.imgur.com/V9fczuO.jpg" 
               alt="Background" 
-              className="w-full h-full object-cover opacity-50"
+              fill
+              className="object-cover opacity-50"
               style={{ display: mainVideoLoaded ? 'none' : 'block' }}
             />
           </div>
@@ -261,9 +255,10 @@ export default function ResumeContent() {
         <div className="container mx-auto px-4 py-16">
           <Section id="intro" className="flex justify-center items-center min-h-screen relative overflow-hidden">
             <div className="absolute inset-0">
-              <img 
+              <Image 
                 src="https://i.imgur.com/a/RIbw46K.jpg" 
                 alt="Intro Background" 
+                fill
                 className="w-full h-full object-cover opacity-50"
                 style={{ display: introVideoLoaded ? 'none' : 'block' }}
               />
@@ -291,17 +286,22 @@ export default function ResumeContent() {
             </div>
             <div ref={introRef}   className="bg-black bg-opacity-50 backdrop-blur-md rounded-lg p-8 max-w-4xl w-full relative z-10">
               <div className="flex flex-col lg:flex-row items-center lg:items-start">
-                <img src="https://content.api.news/v3/images/bin/9761432adcbb7644f1ab75b67cc0f152" alt="Profile" className="w-64 h-64 object-cover mb-4 lg:mr-8 rounded-full" />
+                <Image 
+                  src="https://content.api.news/v3/images/bin/9761432adcbb7644f1ab75b67cc0f152" 
+                  alt="Profile" 
+                  width={256}
+                  height={256}
+                  className="object-cover mb-4 lg:mr-8 rounded-full"
+                />
                 <div className="text-center lg:text-left">
-                <h2 className="text-4xl font-bold mb-4">Hello, I'm <span className="text-green-400">Yassine Ghanmouni</span></h2>
+                  <h2 className="text-4xl font-bold mb-4">Hello, I&#39;m <span className="text-green-400">Yassine Ghanmouni</span></h2>
                   <p className="text-xl mb-4" style={{ fontSize: '24px' }}>Computer Science Student</p>
-                  <p className="mb-4"> With a passion for coding and a strong desire to tackle new challenges, I am eager to explore innovative solutions and continuously develop my expertise in the field.</p>
+                  <p className="mb-4">With a passion for coding and a strong desire to tackle new challenges, I am eager to explore innovative solutions and continuously develop my expertise in the field.</p>
                   <button 
-                        className="bg-green-400 text-black px-4 py-2 rounded flex items-center hover:bg-green-300 transition-colors duration-300 mx-auto lg:mx-0" 
-                         style={{ marginTop: '50px', marginLeft: '160px' }}>
-                        <Download className="mr-2" /> Download CV
-                              </button>
-
+                    className="bg-green-400 text-black px-4 py-2 rounded flex items-center hover:bg-green-300 transition-colors duration-300 mx-auto lg:mx-0" 
+                    style={{ marginTop: '50px', marginLeft: '160px' }}>
+                    <Download className="mr-2" /> Download CV
+                  </button>
                 </div>
               </div>
             </div>
