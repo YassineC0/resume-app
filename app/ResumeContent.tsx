@@ -117,7 +117,7 @@ export default function ResumeContent() {
     }
   }, [])
 
-  const retryVideoLoad = (video: HTMLVideoElement) => {
+  const retryVideoLoad = (video: HTMLVideoElement | null) => {
     if (video) {
       video.load();
     }
