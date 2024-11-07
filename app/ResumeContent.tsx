@@ -1,10 +1,13 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
-import { ChevronDown, Instagram, Facebook, Linkedin, Twitter, Download, Check, Globe, ExternalLink, X, Mail, Music, Waves, Code, Dumbbell } from 'lucide-react'
+import { ChevronDown, Instagram, Facebook, Linkedin, Lightbulb, Palette, Twitter, Download, Check, Globe, Music, Waves, ExternalLink, X, Mail, Code, Dumbbell, Github } from 'lucide-react'
 import { css, Global } from '@emotion/react'
 import Link from 'next/link'
 import Image from 'next/image'
+import Head from 'next/head'
+import { motion, useAnimation } from 'framer-motion'
+import { useInView } from 'react-intersection-observer'
 
 const globalStyles = css`
   @keyframes neon-glow {
@@ -51,12 +54,103 @@ const Section = ({ children, className = "", id = "" }: { children: React.ReactN
     <div
       ref={sectionRef}
       id={id}
-      className={`bg-gray-900 bg-opacity-20 backdrop-blur-sm rounded-lg p-6 mb-8 transition-all duration-1000 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      } ${className}`}
+      className={`bg-gray-900 bg-opacity-20 backdrop-blur-sm rounded-lg p-6 mb-8 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        } ${className}`}
     >
       {children}
     </div>
+  );
+};
+
+const SkillBar = ({ skill, percentage }: { skill: string, percentage: number }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: false,
+    threshold: 0.1,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({ width: `${percentage}%` });
+    } else {
+      controls.start({ width: 0 });
+    }
+  }, [controls, inView, percentage]);
+
+  return (
+    <div ref={ref} className="flex items-center">
+      <span className="w-32">{skill}</span>
+      <div className="flex-1 bg-gray-700 h-2 rounded-full overflow-hidden">
+        <motion.div
+          className="bg-green-400 h-2 rounded-full"
+          initial={{ width: 0 }}
+          animate={controls}
+          transition={{ duration: 1, ease: "easeInOut" }}
+        />
+      </div>
+    </div>
+  );
+};
+
+const LanguageSkill = ({ language, level }: { language: string, level: number }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: false,
+    threshold: 0.1,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start(i => ({
+        scale: i < level ? 1 : 0.5,
+        transition: { duration: 0.5, delay: i * 0.1 }
+      }));
+    } else {
+      controls.start({ scale: 0.5 });
+    }
+  }, [controls, inView, level]);
+
+  return (
+    <div ref={ref} className="flex items-center">
+      <span className="w-20">{language}</span>
+      <div className="flex space-x-1">
+        {[...Array(9)].map((_, i) => (
+          <motion.div
+            key={i}
+            custom={i}
+            animate={controls}
+            initial={{ scale: 0.5 }}
+            className={`w-2 h-2 rounded-full ${i < level ? 'bg-green-400' : 'bg-gray-700'}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const InterestItem = ({ interest }: { interest: { icon: any, title: string, description: string } }) => {
+  return (
+    <motion.div
+      className="flex flex-col items-center text-center"
+      whileHover={{ scale: 1.05, boxShadow: "0px 0px 8px rgba(74, 222, 128, 0.5)" }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <interest.icon className="text-green-400 mb-2" size={48} />
+      <h4 className="text-xl font-bold mb-2">{interest.title}</h4>
+      <p className="text-gray-400">{interest.description}</p>
+    </motion.div>
+  );
+};
+
+const InsightItem = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <motion.li
+      className="text-green-400"
+      whileHover={{ scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <span className="text-white">{children}</span>
+    </motion.li>
   );
 };
 
@@ -71,7 +165,7 @@ export default function ResumeContent() {
   const introRef = useRef<HTMLDivElement>(null)
   const mainVideoRef = useRef<HTMLVideoElement>(null)
   const introVideoRef = useRef<HTMLVideoElement>(null)
-
+  
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50)
@@ -84,7 +178,7 @@ export default function ResumeContent() {
     const handleVideoLoad = (video: HTMLVideoElement | null, setLoaded: (loaded: boolean) => void, setError: (error: string | null) => void) => {
       if (video) {
         video.playbackRate = 1
-        
+
         const handleCanPlay = () => {
           console.log("Video can play")
           setLoaded(true)
@@ -135,29 +229,56 @@ export default function ResumeContent() {
     }
   };
 
+  let InterestsList = [
+    { icon: Music, title: 'Music', description: 'Passionate about various genres and playing instruments.' },
+    { icon: Waves, title: 'Swimming', description: 'Enjoy swimming for fitness and relaxation.' },
+    { icon: Code, title: 'Coding', description: 'Love creating and problem-solving through programming.' },
+    { icon: Dumbbell, title: 'Gym', description: 'Committed to maintaining physical fitness and strength training.' },
+  ]
+  let DesignSkillsList = ['Web Design', 'Illustrations', 'Photoshop', 'Graphic Design']
+  let LanguageList = ['English', 'German', 'Italian', 'French']
+  let KnowledgeList = [
+    "Finance d'entreprise",
+    "Stratégie et Management",
+    "Comptabilité",
+    "Ingénierie Bâtiment",
+    "Microéconomie",
+    "Marketing",
+    "Website Design",
+    "Statistics"
+  ]
+  let EducationList = [
+    { year: '2023 - 2024 (Present)', degree: 'Software Engineer Student', school: 'International Academy Mohammed VI of Civil Aviation, AIAC' },
+    { year: '2020 - 2022', degree: 'Preparatory Class', school: 'CPGE First Prepa, Meknes' },
+    { year: '2017 - 2020', degree: 'Baccalaureate', school: 'Iqrae II School, Errachidia' },
+  ]
   const projects = [
     {
       title: 'Personal Portfolio Website',
       description: 'A responsive portfolio website showcasing my skills and projects.',
       technologies: ['React', 'Next.js', 'Tailwind CSS'],
+      Screenshots:'/',
       link: 'https://yourportfolio.com',
     },
     {
       title: 'Online legal consulting firm',
       description: 'legal guidance with an interactive website featuring service overviews, expert profiles, case studies, and a secure client portal for seamless consultation and document management.',
       technologies: ['Node.js', 'MongoDB', 'React', 'Tailwind CSS'],
+      Screenshots:'/',
       link: 'https://yourecommerce.com',
     },
     {
       title: 'Notes Management Desktop/Web application',
       description: 'A real-time weather application using geolocation and weather APIs.',
       technologies: ['JavaScript', 'HTML5', 'CSS3', 'OpenWeatherMap API'],
+      Screenshots:'/',
       link: 'https://yourweatherapp.com',
     },
     {
       title: 'Task Management System',
       description: 'A collaborative task management tool for teams with real-time updates.',
       technologies: ['Vue.js', 'Firebase', 'Vuex'],
+      Screenshots:'/',
       link: 'https://yourtaskmanager.com',
     }
   ]
@@ -178,6 +299,11 @@ export default function ResumeContent() {
   }, []);
 
   return (
+    <>
+    <Head>
+      <title>Yassine Ghanmouni</title> 
+      <link rel="icon" href="/favicon.ico" /> 
+    </Head>
     <div key={key} className="min-h-screen bg-black text-white">
       <Global styles={globalStyles} />
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-black' : 'bg-transparent'}`}>
@@ -187,14 +313,14 @@ export default function ResumeContent() {
             <ul className="flex space-x-6">
               {['intro', 'education', 'projects', 'knowledge', 'skills', 'interests', 'additional-insights'].map((item) => (
                 <li key={item}>
-                  <a 
-                    href={`#${item}`} 
-                    className="text-lg hover:text-green-400 transition-all duration-300 relative group" 
+                  <Link
+                    href={`#${item}`}
+                    className="text-lg hover:text-green-400 transition-all duration-300 relative group"
                     onClick={(e) => scrollToSection(e, item)}
                   >
                     {item.charAt(0).toUpperCase() + item.slice(1)}
                     <span className="absolute left-0 right-0 bottom-0 h-0.5 bg-green-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -205,19 +331,19 @@ export default function ResumeContent() {
       <main className="relative">
         <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden">
           <div className="absolute inset-0 bg-black">
-            <Image 
-              src="https://i.imgur.com/V9fczuO.jpg" 
-              alt="Background" 
+            <Image
+              src="https://i.imgur.com/V9fczuO.jpg"
+              alt="Background"
               fill
               className="object-cover opacity-50"
               style={{ display: mainVideoLoaded ? 'none' : 'block' }}
             />
           </div>
-          <video 
+          <video
             ref={mainVideoRef}
-            autoPlay 
-            loop 
-            muted 
+            autoPlay
+            loop
+            muted
             playsInline
             className="absolute w-full h-full object-cover"
             poster="https://i.imgur.com/V9fczuO.jpg"
@@ -246,26 +372,26 @@ export default function ResumeContent() {
             </button>
           </div>
           <div className="absolute bottom-4 left-4 z-10">
-            <p>E: your.email@example.com</p>
-            <p>T: +1 234 567 890</p>
+            <p>E: ghanmouni.yassine@aiac.ma</p>
+            <p>T: +212 600 767 422</p>
           </div>
         </section>
 
-        <div className="container mx-auto px-4 py-16">
+        <div ref={introRef} className="container mx-auto px-4 py-16">
           <Section id="intro" className="flex justify-center items-center min-h-screen relative overflow-hidden">
             <div className="absolute inset-0">
-              <Image 
-                src="https://i.imgur.com/a/RIbw46K.jpg" 
-                alt="Intro Background" 
+              <Image
+                src="https://i.imgur.com/a/RIbw46K.jpg"
+                alt="Intro Background"
                 fill
                 className="w-full h-full object-cover opacity-50"
                 style={{ display: introVideoLoaded ? 'none' : 'block' }}
               />
-              <video 
+              <video
                 ref={introVideoRef}
-                autoPlay 
-                loop 
-                muted 
+                autoPlay
+                loop
+                muted
                 playsInline
                 className="w-full h-full object-cover"
                 poster="https://i.imgur.com/RIbw46K.jpg"
@@ -283,11 +409,11 @@ export default function ResumeContent() {
               )}
               <div className="absolute inset-0 bg-black bg-opacity-50"></div>
             </div>
-            <div ref={introRef}   className="bg-black bg-opacity-50 backdrop-blur-md rounded-lg p-8 max-w-4xl w-full relative z-10">
+            <div className="bg-black bg-opacity-50 backdrop-blur-md rounded-lg p-8 max-w-4xl w-full relative z-10">
               <div className="flex flex-col lg:flex-row items-center lg:items-start">
-                <Image 
-                  src="https://content.api.news/v3/images/bin/9761432adcbb7644f1ab75b67cc0f152" 
-                  alt="Profile" 
+                <Image
+                  src="/yeat2.webp"
+                  alt="Profile"
                   width={256}
                   height={256}
                   className="object-cover mb-4 lg:mr-8 rounded-full"
@@ -296,11 +422,14 @@ export default function ResumeContent() {
                   <h2 className="text-4xl font-bold mb-4">Hello, I&#39;m <span className="text-green-400">Yassine Ghanmouni</span></h2>
                   <p className="text-xl mb-4" style={{ fontSize: '24px' }}>Computer Science Student</p>
                   <p className="mb-4">With a passion for coding and a strong desire to tackle new challenges, I am eager to explore innovative solutions and continuously develop my expertise in the field.</p>
-                  <button 
-                    className="bg-green-400 text-black px-4 py-2 rounded flex items-center hover:bg-green-300 transition-colors duration-300 mx-auto lg:mx-0" 
+                  <Link
+                    href="/Yassine-GHANMOUNI-CV.pdf"
+                    download="Yassine-GHANMOUNI-CV.pdf"
+                    target="_blank"
+                    className="bg-green-400 text-black px-4 py-2 w-fit rounded flex items-center hover:bg-green-300 transition-colors duration-300 mx-auto lg:mx-0"
                     style={{ marginTop: '50px', marginLeft: '160px' }}>
                     <Download className="mr-2" /> Download CV
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -309,10 +438,7 @@ export default function ResumeContent() {
           <Section id="education">
             <h3 className="text-2xl font-bold mb-6">Education</h3>
             <div className="space-y-6">
-              {[
-                { year: '2018 - 2022', degree: 'Bachelor of Science in Computer Science', school: 'University of Technology' },
-                { year: '2014 - 2018', degree: 'High School Diploma', school: 'International High School' },
-              ].map((edu, index) => (
+              {EducationList.map((edu, index) => (
                 <div key={index} className="flex flex-col md:flex-row md:items-center border-l-4 border-green-400 pl-4">
                   <div className="md:w-1/4 font-bold text-green-400">{edu.year}</div>
                   <div className="md:w-3/4">
@@ -341,11 +467,11 @@ export default function ResumeContent() {
                       ))}
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setActivePreview(index)}
                     className="text-green-400 hover:text-green-300 transition-colors duration-300 flex items-center"
                   >
-                    View Project <ExternalLink className="ml-1" size={16} />
+                    Learn More <ExternalLink className="ml-1" size={16} />
                   </button>
                 </div>
               ))}
@@ -355,16 +481,7 @@ export default function ResumeContent() {
           <Section id="knowledge">
             <h3 className="text-2xl font-bold mb-6">Knowledge</h3>
             <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
-              {[
-                "Finance d'entreprise",
-                "Stratégie et Management",
-                "Comptabilité",
-                "Ingénierie Bâtiment",
-                "Microéconomie",
-                "Marketing",
-                "Website Design",
-                "Statistics"
-              ].map((skill, index) => (
+              {KnowledgeList.map((skill, index) => (
                 <div key={index} className="flex items-center">
                   <Check className="text-green-400 mr-2" />
                   <span>{skill}</span>
@@ -379,34 +496,16 @@ export default function ResumeContent() {
               <div className="md:w-1/2">
                 <h4 className="text-xl font-bold mb-4">Design Skills</h4>
                 <div className="space-y-2">
-                  {['Web Design', 'Illustrations', 'Photoshop', 'Graphic Design'].map((skill, index) => (
-                    <div key={index} className="flex items-center">
-                      <span className="w-32">{skill}</span>
-                      <div className="flex-1 bg-gray-700 h-2 rounded-full">
-                        <div 
-                          className="bg-green-400 h-2 rounded-full" 
-                          style={{width: `${[90, 70, 95, 85][index]}%`}}
-                        ></div>
-                      </div>
-                    </div>
+                  {DesignSkillsList.map((skill, index) => (
+                    <SkillBar key={index} skill={skill} percentage={[90,90,80,66,70,60][index]} />
                   ))}
                 </div>
               </div>
               <div className="md:w-1/2">
                 <h4 className="text-xl font-bold mb-4">Language Skills</h4>
                 <div className="space-y-4">
-                  {['English', 'German', 'Italian', 'French'].map((language, index) => (
-                    <div key={index} className="flex items-center">
-                      <span className="w-20">{language}</span>
-                      <div className="flex space-x-1">
-                        {[...Array(9)].map((_, i) => (
-                          <div 
-                            key={i} 
-                            className={`w-2 h-2 rounded-full ${i < [9, 7, 5, 8][index] ? 'bg-green-400' : 'bg-gray-700'}`}
-                          ></div>
-                        ))}
-                      </div>
-                    </div>
+                  {LanguageList.map((language, index) => (
+                    <LanguageSkill key={index} language={language} level={[9, 7, 5, 8][index]} />
                   ))}
                 </div>
               </div>
@@ -416,17 +515,8 @@ export default function ResumeContent() {
           <Section id="interests">
             <h3 className="text-2xl font-bold mb-6">Interests</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                { icon: Music, title: 'Music', description: 'Passionate about various genres and playing instruments.' },
-                { icon: Waves, title: 'Swimming', description: 'Enjoy swimming for fitness and relaxation.' },
-                { icon: Code, title: 'Coding', description: 'Love creating and problem-solving through programming.' },
-                { icon: Dumbbell, title: 'Gym', description: 'Committed to maintaining physical fitness and strength training.' },
-              ].map((interest, index) => (
-                <div key={index} className="flex flex-col items-center text-center">
-                  <interest.icon className="text-green-400 mb-2" size={48} />
-                  <h4 className="text-xl font-bold mb-2">{interest.title}</h4>
-                  <p className="text-gray-400">{interest.description}</p>
-                </div>
+              {InterestsList.map((interest, index) => (
+                <InterestItem key={index} interest={interest} />
               ))}
             </div>
           </Section>
@@ -434,25 +524,55 @@ export default function ResumeContent() {
           <Section id="additional-insights">
             <h3 className="text-2xl font-bold mb-6">Additional Insights</h3>
             <ul className="list-disc list-inside space-y-4">
-              <li className="text-green-400">
-                <span className="text-white"><strong>Problem-solving prowess:</strong> Skilled at breaking down complex issues into manageable components and developing innovative solutions.</span>
-              </li>
-              <li className="text-green-400">
-                <span className="text-white"><strong>Continuous learning mindset:</strong> Eagerness to stay updated with the latest technologies and best practices in the ever-evolving field of software development.</span>
-              </li>
-              <li className="text-green-400">
-                <span className="text-white"><strong>Collaborative spirit:</strong> Excellent communication skills and the ability to work effectively in cross-functional teams, contributing to a positive work environment.</span>
-              </li>
+              <InsightItem>
+                <strong>Problem-solving prowess:</strong> Skilled at breaking down complex issues into manageable components and developing innovative solutions.
+              </InsightItem>
+              <InsightItem>
+                <strong>Continuous learning mindset:</strong> Eagerness to stay updated with the latest technologies and best practices in the ever-evolving field of software development.
+              </InsightItem>
+              <InsightItem>
+                <strong>Collaborative spirit:</strong> Excellent communication skills and the ability to work effectively in cross-functional teams, contributing to a positive work environment.
+              </InsightItem>
             </ul>
           </Section>
         </div>
       </main>
 
       <div className="fixed top-0 right-0 h-full flex flex-col justify-center items-center space-y-4 p-4 bg-gray-900 bg-opacity-20 backdrop-blur-sm">
-        <a href="#" className="text-white hover:text-green-400 transition-colors duration-300"><Instagram size={24} /></a>
-        <a href="#" className="text-white hover:text-green-400 transition-colors duration-300"><Facebook size={24} /></a>
-        <a href="#" className="text-white hover:text-green-400 transition-colors duration-300"><Linkedin size={24} /></a>
-        <a href="#" className="text-white hover:text-green-400 transition-colors duration-300"><Twitter size={24} /></a>
+        <Link
+          href="https://www.facebook.com/Yassine.Ghanmouni"
+          className="text-white hover:text-green-400 transition-colors duration-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Facebook size={24} />
+        </Link>
+
+        <Link
+          href="https://www.linkedin.com/in/yassine-ghanmouni-110444221/"
+          className="text-white hover:text-green-400 transition-colors duration-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Linkedin size={24} />
+        </Link>
+
+        <Link
+          href="https://github.com/YassineC0"
+          className="text-white hover:text-green-400 transition-colors duration-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Github size={24} />
+        </Link>
+
+        <Link
+          href="mailto:ghanmouni.yassine@aiac.ma"
+          className="text-white hover:text-green-400 transition-colors duration-300"
+          target="_blank"
+        >
+          <Mail size={24} />
+        </Link>
       </div>
 
       {activePreview !== null && (
@@ -464,17 +584,17 @@ export default function ResumeContent() {
                 <X size={24} />
               </button>
             </div>
-            <div className="mb-4">
-              <p className="text-gray-400">Screenshots would be displayed here.</p>
+            <div className="mb-4 flex justify-center items-center">
+              <Image width={500} height={500}  src={projects[activePreview].Screenshots} alt={projects[activePreview].Screenshots}/>
             </div>
-            <a 
-              href={projects[activePreview].link} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <Link
+              href={projects[activePreview].link}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-green-400 hover:text-green-300 transition-colors duration-300 flex items-center"
             >
               Visit Project <ExternalLink className="ml-1" size={16} />
-            </a>
+            </Link>
           </div>
         </div>
       )}
@@ -485,21 +605,43 @@ export default function ResumeContent() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <h3 className="text-2xl font-bold mb-2">Yassine Ghanmouni</h3>
-              <p className="text-gray-400">UX/UI Designer and Front-end Developer</p>
+              <p className="text-gray-400">UX/UI Designer and full-stack Developer</p>
             </div>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-green-400 transition-colors duration-300">
-                <Instagram size={24} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-green-400 transition-colors duration-300">
+              <Link
+                href="https://www.facebook.com/profile.php?id=61550698631652&mibextid=LQQJ4d"
+                className="text-white hover:text-green-400 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Facebook size={24} />
+              </Link>
+
+              <Link
+                href="https://www.linkedin.com/in/yassine-ghanmouni-110444221/"
+                className="text-white hover:text-green-400 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Linkedin size={24} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-green-400 transition-colors duration-300">
-                <Twitter size={24} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-green-400 transition-colors duration-300">
+              </Link>
+
+              <Link
+                href="https://github.com/YassineC0"
+                className="text-white hover:text-green-400 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Github size={24} />
+              </Link>
+
+              <Link
+                href="mailto:ghanmouni.yassine@aiac.ma"
+                className="text-white hover:text-green-400 transition-colors duration-300"
+                target="_blank"
+              >
                 <Mail size={24} />
-              </a>
+              </Link>
             </div>
           </div>
           <div className="mt-8 text-center text-gray-400 text-sm">
@@ -508,5 +650,6 @@ export default function ResumeContent() {
         </div>
       </footer>
     </div>
+    </>
   )
 }
