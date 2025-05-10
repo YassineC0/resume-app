@@ -412,7 +412,7 @@ export default function ResumeContent() {
             <div className="bg-black bg-opacity-50 backdrop-blur-md rounded-lg p-8 max-w-4xl w-full relative z-10">
               <div className="flex flex-col lg:flex-row items-center lg:items-start">
                 <Image
-                  src="/yeat2.webp"
+                  src="/photo-yassine.jpg"
                   alt="Profile"
                   width={256}
                   height={256}
